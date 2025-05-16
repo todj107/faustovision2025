@@ -70,15 +70,16 @@
         // Sort by total score (last column)
         rows.sort((a, b) => parseFloat(b[6]) - parseFloat(a[6]));
 
-        rows.forEach(row => {
-          const tr = document.createElement("tr");
-          row.forEach(cell => {
-            const td = document.createElement("td");
-            td.textContent = cell;
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
+        row.forEach(cell => {
+			const td = document.createElement("td");
+			// If it's a Date-like object from Sheets, convert it
+			if (typeof cell === 'object' && cell !== null && cell.toString().includes('Date')) {
+				td.textContent = parseFloat(cell.toString().match(/\(([^)]+)\)/)[1].split(',')[3]); // gets the hour value (e.g., 4)
+			} else {
+				td.textContent = cell;
+			}
+			tr.appendChild(td);
+		});
 
         document.getElementById("loading").style.display = "none";
         table.style.display = "table";
