@@ -1,92 +1,116 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<meta charset="UTF-8" />
-<title>^Faustovision^</title>
-<style>
-	body {
-		font-family: sans-serif;
-		background: #f8f9fa;
-		padding: 2rem;
-	}
-	h1 {
-		text-align: center;
-		color: #333;
-	}
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		margin-top: 1rem;
-	}
-	th, td {
-		padding: 0.6rem;
-		border: 1px solid #ddd;
-		text-align: center;
-	}
-	th {
-		background-color: #ffdfdf;
-	}
-	tr:nth-child(even) {
-		background-color: #f2f2f2;
-	}
-	.loading {
-		text-align: center;
-		margin-top: 2rem;
-		font-size: 1.2rem;
-	}
-  </style>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>^Faustovision^</title>
+	<link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
 	<h1>^Faustovision^!!! Leaderboared:</h1>
-	<div class="loading" id="loading">Laddar sidan...</div>
+	<br>
+	<h2>Resultat: </h2>
+	<div class="loading" id="loading">Laddar leaderboareden...</div>
+	<table id="leaderboard_short" style="display: none;">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Namn</th>
+				<th>Totalt</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+	<div style="width: 100%;">
+		<img src="schmaust.png" alt="smust">
+	</div>
+	<h2>Långt Resultat:</h2>
 	<table id="leaderboard" style="display: none;">
 		<thead>
 			<tr>
-			<th>Namn</th>
-			<th>Smak</th>
-			<th>Styrka</th>
-			<th>Utseende</th>
-			<th>Presentation</th>
-			<th>Originalitet</th>
-			<th>Totalt</th>
+				<!-- <th>#</th> -->
+				<th>Namn</th>
+				<th>Smak</th>
+				<th>Styrk.</th>
+				<th>Fin</th>
+				<th>Pres.</th>
+				<th>Orig.</th>
+				<!-- <th>Totalt</th> -->
 			</tr>
 		</thead>
 		<tbody></tbody>
 	</table>
 
 	<script>
-		const sheetID = "1ZcCLv5BGg9hDiurdM-dyq21JyUHIFfavleH0XJL3pzQ";
-		const sheetName = "Leaderboard_Groups";
-		const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?sheet=${sheetName}`;
+	const sheetID = "1ZcCLv5BGg9hDiurdM-dyq21JyUHIFfavleH0XJL3pzQ";
+	const sheetName = "Leaderboard_Groups";
+	const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?sheet=${sheetName}`;
 
-		fetch(url)
-			.then(res => res.text())
-			.then(rep => {
+	fetch(url)
+		.then(res => res.text())
+		.then(rep => {
 			const json = JSON.parse(rep.substr(47).slice(0, -2));
-			const table = document.getElementById("leaderboard");
-			const tbody = table.querySelector("tbody");
+			const rows = json.table.rows
+				.map(r => r.c.map(c => c?.v ?? ""))
+				.filter(r => r.some(cell => cell !== ""));
 
-			const rows = json.table.rows.map(r => r.c.map(c => c?.v ?? ""));
-			// Sort by total score (last column)
+			// Sort by total (last column)
 			rows.sort((a, b) => parseFloat(b[6]) - parseFloat(a[6]));
 
-			rows.forEach(row => {
-				const tr = document.createElement("tr");
-				row.forEach(cell => {
-				const td = document.createElement("td");
-				td.textContent = cell;
-				tr.appendChild(td);
+			// FULL TABLE
+			const tableFull = document.getElementById("leaderboard");
+			const tbodyFull = tableFull.querySelector("tbody");
+
+			// SHORT TABLE
+			const tableShort = document.getElementById("leaderboard_short");
+			const tbodyShort = tableShort.querySelector("tbody");
+
+			rows.forEach((row, index) => {
+				// -------- FULL TABLE --------
+				const trFull = document.createElement("tr");
+
+				// Placering
+				// const rankCellFull = document.createElement("td");
+				// rankCellFull.textContent = index + 1;
+				// trFull.appendChild(rankCellFull);
+
+				// Add all columns except the 8th
+				row.slice(0, 6).forEach(cell => {
+					const td = document.createElement("td");
+					td.textContent = cell;
+					trFull.appendChild(td);
 				});
-				tbody.appendChild(tr);
+
+				tbodyFull.appendChild(trFull);
+
+				// -------- SHORT TABLE --------
+				const trShort = document.createElement("tr");
+
+				const placeCell = document.createElement("td");
+				placeCell.textContent = index + 1;
+				trShort.appendChild(placeCell);
+
+				const nameCell = document.createElement("td");
+				nameCell.textContent = row[0]; // Namn
+				trShort.appendChild(nameCell);
+
+				const totalCell = document.createElement("td");
+				totalCell.textContent = row[6]; // Totalt
+				trShort.appendChild(totalCell);
+
+				tbodyShort.appendChild(trShort);
 			});
 
+			// Show both tables
 			document.getElementById("loading").style.display = "none";
-			table.style.display = "table";
-			})
-			.catch(err => {
-				document.getElementById("loading").textContent = "Fel vid laddning 😞";
-				console.error(err);
-			});
+			tableFull.style.display = "table";
+			tableShort.style.display = "table";
+		})
+		.catch(err => {
+			document.getElementById("loading").textContent = "Fel vid laddning 😞";
+			console.error(err);
+		});
 	</script>
+
 </body>
 </html>
