@@ -1,92 +1,91 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8" />
-  <title>Drinkkväll – Leaderboard</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f8f9fa;
-      padding: 2rem;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th, td {
-      padding: 0.6rem;
-      border: 1px solid #ddd;
-      text-align: center;
-    }
-    th {
-      background-color: #ffdfdf;
-    }
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-    .loading {
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 1.2rem;
-    }
+<meta charset="UTF-8" />
+<title>Drinkkväll – Leaderboard</title>
+<style>
+	body {
+		font-family: sans-serif;
+		background: #f8f9fa;
+		padding: 2rem;
+	}
+	h1 {
+		text-align: center;
+		color: #333;
+	}
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		margin-top: 1rem;
+	}
+	th, td {
+		padding: 0.6rem;
+		border: 1px solid #ddd;
+		text-align: center;
+	}
+	th {
+		background-color: #ffdfdf;
+	}
+	tr:nth-child(even) {
+		background-color: #f2f2f2;
+	}
+	.loading {
+		text-align: center;
+		margin-top: 2rem;
+		font-size: 1.2rem;
+	}
   </style>
 </head>
 <body>
-  <h1>🥂 Drinkkväll Leaderboard</h1>
-  <div class="loading" id="loading">Laddar leaderboard...</div>
-  <table id="leaderboard" style="display: none;">
-    <thead>
-      <tr>
-        <th>Namn</th>
-        <th>Smak</th>
-        <th>Styrka</th>
-        <th>Utseende</th>
-        <th>Presentation</th>
-        <th>Originalitet</th>
-        <th>Totalt</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+	<h1>^Faustovision^!!! Leaderboared:</h1>
+	<div class="loading" id="loading">Laddar leaderboard...</div>
+	<table id="leaderboard" style="display: none;">
+		<thead>
+			<tr>
+			<th>Namn</th>
+			<th>Smak</th>
+			<th>Styrka</th>
+			<th>Utseende</th>
+			<th>Presentation</th>
+			<th>Originalitet</th>
+			<th>Totalt</th>
+			</tr>
+		</thead>
+	</table>
 
-  <script>
-    const sheetID = "1ZcCLv5BGg9hDiurdM-dyq21JyUHIFfavleH0XJL3pzQ";
-    const sheetName = "Leaderboard_Groups";
-    const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?sheet=${sheetName}`;
+	<script>
+		const sheetID = "1ZcCLv5BGg9hDiurdM-dyq21JyUHIFfavleH0XJL3pzQ";
+		const sheetName = "Leaderboard_Groups";
+		const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?sheet=${sheetName}`;
 
-    fetch(url)
-      .then(res => res.text())
-      .then(rep => {
-        const json = JSON.parse(rep.substr(47).slice(0, -2));
-        const table = document.getElementById("leaderboard");
-        const tbody = table.querySelector("tbody");
+		fetch(url)
+			.then(res => res.text())
+			.then(rep => {
+			const json = JSON.parse(rep.substr(47).slice(0, -2));
+			const table = document.getElementById("leaderboard");
+			const tbody = table.querySelector("tbody");
 
-        const rows = json.table.rows.map(r => r.c.map(c => c?.v ?? ""));
-        // Sort by total score (last column)
-        rows.sort((a, b) => parseFloat(b[6]) - parseFloat(a[6]));
+			const rows = json.table.rows.map(r => r.c.map(c => c?.v ?? ""));
+			// Sort by total score (last column)
+			rows.sort((a, b) => parseFloat(b[6]) - parseFloat(a[6]));
 
-        rows.forEach(row => {
-          const tr = document.createElement("tr");
-          row.forEach(cell => {
-            const td = document.createElement("td");
-            td.textContent = cell;
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
+			rows.forEach(row => {
+				const tr = document.createElement("tr");
+				row.forEach(cell => {
+				const td = document.createElement("td");
+				td.textContent = cell;
+				tr.appendChild(td);
+				});
+				tbody.appendChild(tr);
+			});
 
-        document.getElementById("loading").style.display = "none";
-        table.style.display = "table";
-      })
-      .catch(err => {
-        document.getElementById("loading").textContent = "Fel vid laddning 😞";
-        console.error(err);
-      });
-  </script>
+			document.getElementById("loading").style.display = "none";
+			table.style.display = "table";
+			})
+			.catch(err => {
+				document.getElementById("loading").textContent = "Fel vid laddning 😞";
+				console.error(err);
+			});
+	</script>
 </body>
 </html>
